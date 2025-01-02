@@ -9,7 +9,7 @@ def create_main_window():
     """Sets up the main GUI window with a better layout."""
     root = tk.Tk()
     root.title("Image Step Calculator")
-    root.geometry("500x450")  # Increased to fit combobox
+    root.geometry("500x480")  # Increased to fit description.
     root.resizable(False, False)  # Disable resizing
     root.configure(bg="#f0f2f5")  # Background color
 

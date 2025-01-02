@@ -33,3 +33,6 @@ Thumbs.db
 
 # User Config
 config.json
+
+# Suggestions Folder
+suggestions

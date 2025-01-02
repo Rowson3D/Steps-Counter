@@ -23,6 +23,7 @@ The script takes a folder as input, recursively counts all images, and calculate
 *  **Status messages**: Provides feedback in the application, so the user is informed.
 *  **Clipboard**: Copies the suggested folder name to the clipboard for easy pasting.
 *  **Remembers Last Used Path**: Remembers the last used path for when you re-open the application.
+*   **Suggestion Saving:** Saves all the current settings and recommendations to a text file in the "suggestions" folder. The file is named after the 'repeats' value and folder name. This file will be created/overwritten whenever an action occurs (selection of a folder with valid images, a change in the batch size, or a change in the step mode).
 
 ## Files
 
@@ -37,6 +38,7 @@ The script takes a folder as input, recursively counts all images, and calculate
 *   `requirements.txt`: Lists Python package dependencies.
 *   `README.md`: This file.
 *   `config.json`: The configuration file that saves user settings (will automatically be created if it does not exist).
+*   `suggestions/`: A folder where the program will save all of the configurations from each dataset that the user tries to generate.
 
 ## Prerequisites
 
@@ -62,8 +64,9 @@ The script takes a folder as input, recursively counts all images, and calculate
 2.  Click the "Select Image Folder" button and choose the folder containing your images.
 3.  A "Step Mode" can be selected, where "Normal" finds the first valid result, "Strict" matches exactly, and "Prioritize Epochs" tries to find the largest possible epoch, while "Prioritize Repeats" does the opposite.
 4.  Enter a batch size using the spinbox provided.
-5. The application will calculate and display the 'repeats', 'epochs', and 'total_steps'.
-6. The 'repeats' and the current folder name will be copied to clipboard for easy pasting.
+5.  The application will calculate and display the 'repeats', 'epochs', and 'total_steps'.
+6.  The 'repeats' and the current folder name will be copied to clipboard for easy pasting.
+7.  All the current settings will be saved to a text file with the name being the repeats and folder name, inside the "suggestions" folder. This file is overwritten every time a new folder is selected, the batch size is changed, or the step mode is changed.
 
 ## Configuration
 
@@ -80,11 +83,12 @@ The application uses a `config.json` file to store user settings, which is locat
 
 *   The code is structured in a modular way for easy understanding and maintenance.
 *   Error handling is implemented to provide a better user experience.
-*   The program uses a dialog box for batch size input.
-*   The batch size is validated in the dialog, preventing the program from crashing.
+*   The program uses a spinbox for batch size input.
+*   The batch size is validated when the user unfocuses, preventing the program from crashing.
 *   A message box is shown if no images are found in the given directory.
 *   A message box is shown if no suitable results are found using the given parameters.
 *   The repeats folder name is copied to clipboard for easy pasting.
+* The settings for a dataset (images found, repeats, epochs, total steps, batch size, and step mode) will automatically be written to a file in the "suggestions" folder.
 
 ## To Do
 
