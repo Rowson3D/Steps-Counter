@@ -1,8 +1,0 @@
-{
-    "min_repeats_range": 900,
-    "max_repeats_range": 1000,
-    "min_total_steps_range": 2500,
-    "max_total_steps_range": 4000,
-    "default_batch_size": 2,
-    "last_folder": ""
-}
