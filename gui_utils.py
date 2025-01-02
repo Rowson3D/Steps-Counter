@@ -9,7 +9,7 @@ def create_main_window():
     """Sets up the main GUI window with a better layout."""
     root = tk.Tk()
     root.title("Image Step Calculator")
-    root.geometry("500x480")  # Increased to fit description.
+    root.geometry("500x550")  # Increased to fit all elements.
     root.resizable(False, False)  # Disable resizing
     root.configure(bg="#f0f2f5")  # Background color
 
@@ -59,13 +59,14 @@ def create_main_window():
 
     # Status label
     global status_label
-    status_label = ttk.Label(main_frame, text="", style="TLabel")
+    status_label = ttk.Label(main_frame, text="Status: ", style="TLabel")
     status_label.grid(row=2, column=0, columnspan=3, sticky="ew", padx=20, pady=(0,10))
 
-    # Step Mode Label and Combobox
+     # Step Mode Label
     mode_label = ttk.Label(main_frame, text="Step Mode:", style="TLabel")
     mode_label.grid(row=3, column=0, sticky="e", padx=(0, 5), pady=(0, 10))
-
+    
+     # Step Mode Combobox
     global step_mode_combo
     step_mode_combo = ttk.Combobox(main_frame, values=["Normal", "Strict", "Prioritize Epochs", "Prioritize Repeats"], state="readonly", font=font_style)
     step_mode_combo.set("Normal")  # Default value.
@@ -74,23 +75,28 @@ def create_main_window():
     # Description Label
     global description_label
     description_label = ttk.Label(main_frame, text="First valid result in range.", wraplength=450, style="TLabel", font=("Arial", 10))
-    description_label.grid(row=3, column=0, columnspan=3, sticky="ew", padx=20, pady=(0, 10))
+    description_label.grid(row=4, column=0, columnspan=3, sticky="ew", padx=20, pady=(0, 10))
 
     # Batch Size Label and Input
     batch_size_label = ttk.Label(main_frame, text="Batch Size:", style="TLabel")
-    batch_size_label.grid(row=4, column=0, sticky="e", padx=(0, 5), pady=(0,10))
+    batch_size_label.grid(row=5, column=0, sticky="e", padx=(0, 5), pady=(0,10))
 
     global batch_size_spinbox
     config = load_config()  # Load config values for spinbox.
     default_batch_size = config.get("default_batch_size", 2)
     batch_size_spinbox = ttk.Spinbox(main_frame, from_=1, to=1000, style="TSpinbox") #set min and max
     batch_size_spinbox.set(str(default_batch_size))
-    batch_size_spinbox.grid(row=4, column=1, sticky="w", pady=(0,10))
+    batch_size_spinbox.grid(row=5, column=1, sticky="w", pady=(0,10))
 
     # Select Folder Button
     global select_folder_button
     select_folder_button = ttk.Button(main_frame, text="Select Image Folder", style='BlackButton.TButton')
-    select_folder_button.grid(row=5, column=0, columnspan=3, sticky="ew", padx=20, pady=(0, 10))
+    select_folder_button.grid(row=6, column=0, columnspan=3, sticky="ew", padx=20, pady=(0, 10))
+    
+    # Calculate Button
+    global calculate_button
+    calculate_button = ttk.Button(main_frame, text="Calculate", style='BlackButton.TButton')
+    calculate_button.grid(row=7, column=0, columnspan=3, sticky="ew", padx=20, pady=(0, 10))
 
 
     # Configure the grid for dynamic resizing
@@ -99,7 +105,7 @@ def create_main_window():
     main_frame.grid_columnconfigure(1, weight=0)  # Center column, does not expand
     main_frame.grid_columnconfigure(2, weight=1)  # Right column, expands
 
-    return root, select_folder_button, batch_size_spinbox, status_label, step_mode_combo, description_label
+    return root, select_folder_button, batch_size_spinbox, status_label, step_mode_combo, description_label, calculate_button
 
 def update_results(results, num_images, folder_path):
     """Updates the GUI with the calculated results."""
@@ -112,7 +118,6 @@ def update_results(results, num_images, folder_path):
         f"Recommended Folder Name: {results['repeats']}_{folder_name}"
     ))
 
-
 def copy_to_clipboard(repeats, folder_path):
     """Copies the repeats and folder name to the clipboard for easy pasting."""
     folder_name = os.path.basename(folder_path)
@@ -123,7 +128,7 @@ def copy_to_clipboard(repeats, folder_path):
 
 def update_status(message):
     """Updates the status label with a message."""
-    status_label.config(text=message)
+    status_label.config(text=f"Status: {message}") # prepends the status to the message.
 
 def update_description(mode, description_label):
         if mode == "Normal":

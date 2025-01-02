@@ -10,9 +10,11 @@ from config import load_config, save_config
 import time
 
 SUGGESTIONS_FOLDER = "suggestions"
+selected_folder_path = None  # Variable to hold the selected folder path.
 
 def select_folder():
     """Handle folder selection and processing."""
+    global selected_folder_path #sets as global so it can be modified.
     folder_path = filedialog.askdirectory(title="Select Image Folder")
     if folder_path:
         update_status("Counting images...")
@@ -22,10 +24,11 @@ def select_folder():
                  show_info("No images were found in selected path.")
                  update_status("")
                  clear_suggestion()
+                 selected_folder_path = None #set path to none
                  return
-            process_results(num_images, folder_path)
+            selected_folder_path = folder_path #set selected folder path.
+            process_results(num_images, folder_path) #calculate for first time selection.
             update_status(f"Folder scanned, images found: {num_images}")
-            
         except Exception as e:
              show_error(f"An error occurred: {e}")
              update_status("") #clear message
@@ -70,6 +73,16 @@ def process_results(num_images, folder_path):
     except Exception as e:
         show_error(f"An error occurred: {e}")
         update_status("")  # clear message
+        
+def calculate_results():
+    """Recalculates the results of the current path"""
+    global selected_folder_path
+    if selected_folder_path: #ensure there is a path set.
+         try:
+           num_images = count_images_recursively(selected_folder_path)
+           process_results(num_images, selected_folder_path)
+         except Exception as e:
+              show_error(f"An error occurred: {e}")
 
 def save_suggestion(folder_path, num_images, batch_size, step_mode, results):
     """Saves the current settings to a txt file in the suggestions folder."""
@@ -113,31 +126,32 @@ def clear_suggestion():
 
 def batch_size_changed(event):
      """Updates the table data based on the current batch size."""
-     folder_path = select_folder_button.cget("text") #get folder path from text
-     if folder_path != "Select Image Folder":
-        try:
-           num_images = count_images_recursively(folder_path)
-           process_results(num_images,folder_path)
-        except Exception as e:
-            show_error(f"An error occurred: {e}")
+     global selected_folder_path
+     if selected_folder_path: #only try to recalculate if there is a selected folder path
+        calculate_results() #call function.
 
 def mode_changed(event):
     update_description(step_mode_combo.get(), description_label) #added call to function to update description.
-    folder_path = select_folder_button.cget("text") #get folder path from text
-    if folder_path != "Select Image Folder":
-        try:
-           num_images = count_images_recursively(folder_path)
-           process_results(num_images,folder_path)
-        except Exception as e:
-            show_error(f"An error occurred: {e}")
+    global selected_folder_path
+    if selected_folder_path: #only try to recalculate if there is a selected folder path
+          calculate_results()
 
+def on_closing():
+    """Saves the suggestion file before the window is closed"""
+    global selected_folder_path
+    if selected_folder_path: #Check to make sure a folder has been selected before saving.
+          calculate_results() #call function to save suggestions
+
+    root.destroy()
 
 if __name__ == "__main__":
-    root, select_folder_button, batch_size_spinbox, status_label, step_mode_combo, description_label = create_main_window()  # GUI setup
+    root, select_folder_button, batch_size_spinbox, status_label, step_mode_combo, description_label, calculate_button = create_main_window()  # GUI setup
     select_folder_button.config(command=select_folder)  # Connect Button to command.
+    calculate_button.config(command=calculate_results) #connect calculate button.
     update_description(step_mode_combo.get(), description_label) #Initial call to set default description.
     step_mode_combo.bind("<<ComboboxSelected>>", mode_changed) # Update description on mode changed.
     batch_size_spinbox.bind("<FocusOut>", batch_size_changed)
+    root.protocol("WM_DELETE_WINDOW", on_closing)
 
     # Placeholder for results - added in gui_utils
     root.mainloop()
